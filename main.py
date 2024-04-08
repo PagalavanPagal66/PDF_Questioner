@@ -1,4 +1,3 @@
-#IMPORTING LIBRARIES
 
 import openai
 import PyPDF2
@@ -6,54 +5,51 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize, sent_tokenize
 
-#PROJECT SET-UP
 
-API_KEY = "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"
+API_KEY = "sk-cgdX71bullQIykhX6APFT3BlbkFJwRvGJJnU"
 openai.api_key = API_KEY
 model_engine = "gpt-3.5-turbo-16k"
 
-#USER-DEFINED FUNCTIONS FOR CODE REUSABILITY
-
-def get_pdf_to_text(pdfFileObj):
-    pdfReader = PyPDF2.PdfReader(pdfFileObj)
+def get_pdf_to_text(pdffileobj):
+    pdfreader = PyPDF2.PdfReader(pdffileobj)
     final_text = ""
-    for iter in pdfReader.pages:
+    for iter in pdfreader.pages:
         final_text += str(iter.extract_text())
     return final_text
 
-pdfFileObj = open(r"C:\Users\pagal\OneDrive\Desktop\Akaike\chapter-3.pdf", 'rb')
-pdf_data = get_pdf_to_text(pdfFileObj)
+pdffileobj = open(r"C:\Users\pagal\OneDrive\Desktop\Akaike\chapter-3.pdf", 'rb')
+pdf_data = get_pdf_to_text(pdffileobj)
 
 def summarizer(text):
     if(len(text)<16385):
         return text
-    stopWords = set(stopwords.words("english"))
+    stopword = set(stopwords.words("english"))
     words = word_tokenize(text)
-    freqTable = dict()
+    freqtable = dict()
     for word in words:
         word = word.lower()
-        if word in stopWords:
+        if word in stopword:
             continue
-        if word in freqTable:
-            freqTable[word] = freqTable[word]+1
+        if word in freqtable:
+            freqtable[word] = freqtable[word]+1
         else:
-            freqTable[word] = 1
+            freqtable[word] = 1
     sentences = sent_tokenize(text)
-    sentenceValue = dict()
+    sentencevalue = dict()
     for sentence in sentences:
-        for word, freq in freqTable.items():
+        for word, freq in freqtable.items():
             if word in sentence.lower():
-                if sentence in sentenceValue:
-                    sentenceValue[sentence] = freq + sentenceValue[sentence]
+                if sentence in sentencevalue:
+                    sentencevalue[sentence] = freq + sentencevalue[sentence]
                 else:
-                    sentenceValue[sentence] = freq
-    sumValues = 0
-    for sentence in sentenceValue:
-        sumValues = sentenceValue[sentence] + sumValues
-    average = int(sumValues / len(sentenceValue))
+                    sentencevalue[sentence] = freq
+    sumvalues = 0
+    for sentence in sentencevalue:
+        sumvalues = sentencevalue[sentence] + sumvalues
+    average = int(sumvalues / len(sentencevalue))
     summary = ''
     for sentence in sentences:
-        if (sentence in sentenceValue) and (sentenceValue[sentence] > (1.2 * average)):
+        if (sentence in sentencevalue) and (sentencevalue[sentence] > (1.2 * average)):
             summary = summary + " " + sentence
     return summarizer(summary)
 
